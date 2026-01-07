@@ -7,22 +7,29 @@ import { v4 as uuidv4 } from "uuid";
 const router = express.Router();
 
 // Helper function to extract vehicle keywords from user message
-// In server/routes/chat.js, update the extractVehicleKeywords function
 const extractVehicleKeywords = (message) => {
   const keywords = [];
   const lowerMessage = message.toLowerCase();
   
-  // Extract vehicle types
-  const vehicleTypes = ["car", "bike", "truck", "ev", "electric", "suv", "sedan", "hatchback", "hybrid"];
+  // Extract vehicle types - added "motorcycles" and improved plural handling
+  const vehicleTypes = ["car", "cars", "bike", "bikes", "motorcycle", "motorcycles", "truck", "trucks", "ev", "electric", "suv", "suvs", 
+                       "sedan", "sedans", "hatchback", "hybrid", "minivan", "convertible", "sports car", "cruiser", "sport-bike"];
   vehicleTypes.forEach(type => {
     if (lowerMessage.includes(type)) {
-      keywords.push(type);
+      // Normalize singular forms for database matching
+      if (type === "bikes" || type === "motorcycles") keywords.push("bike");
+      else if (type === "cars" || type === "sedans") keywords.push("car");
+      else if (type === "trucks") keywords.push("truck");
+      else if (type === "suvs") keywords.push("suv");
+      else keywords.push(type);
     }
   });
   
   // Extract common brands (expanded list)
-  const brands = ["toyota", "honda", "ford", "bmw", "mercedes", "tesla", "hyundai", "nissan", 
-                  "mazda", "volkswagen", "audi", "chevrolet", "jeep", "kia", "harley-davidson"];
+  const brands = ["toyota", "honda", "ford", "bmw", "mercedes", "mercedes-benz", "tesla", "hyundai", "nissan", 
+                  "mazda", "volkswagen", "audi", "chevrolet", "chevy", "jeep", "kia", "harley-davidson", 
+                  "porsche", "chrysler", "ram", "dodge", "subaru", "lexus", "acura", "infiniti", "volvo", 
+                  "land rover", "jaguar", "lincoln", "cadillac", "buick", "gmc", "mitsubishi"];
   brands.forEach(brand => {
     if (lowerMessage.includes(brand)) {
       keywords.push(brand);
@@ -31,10 +38,33 @@ const extractVehicleKeywords = (message) => {
   
   // Extract vehicle models (expanded list)
   const models = ["corolla", "civic", "camry", "accord", "model 3", "model y", "f-150", 
-                  "cr-v", "prius", "mustang", "explorer", "escape", "silverado", "iron 883"];
+                  "cr-v", "prius", "mustang", "explorer", "escape", "silverado", "iron 883",
+                  "altima", "sonata", "jetta", "mazda3", "leaf", "bolt", "mach-e", "rav4",
+                  "cx-5", "tahoe", "tacoma", "x5", "gle", "odyssey", "sienna", "pacifica",
+                  "mx-5", "miata", "z4", "rebel", "ninja", "3 series", "c-class", "a4", "es",
+                  "camaro", "cayman", "grand cherokee", "explorer"];
   models.forEach(model => {
     if (lowerMessage.includes(model)) {
       keywords.push(model);
+    }
+  });
+  
+  // Extract price range keywords
+  const priceKeywords = ["under $20k", "under $30k", "under $40k", "budget", "affordable", "cheap", 
+                        "expensive", "luxury", "premium", "mid-range"];
+  priceKeywords.forEach(keyword => {
+    if (lowerMessage.includes(keyword)) {
+      keywords.push(keyword);
+    }
+  });
+  
+  // Extract feature keywords
+  const featureKeywords = ["fuel efficient", "mileage", "mpg", "reliable", "family", "spacious", 
+                          "off-road", "performance", "sport", "comfort", "technology", "safety",
+                          "towing", "cargo", "all-wheel drive", "awd", "four-wheel drive", "4wd"];
+  featureKeywords.forEach(keyword => {
+    if (lowerMessage.includes(keyword)) {
+      keywords.push(keyword);
     }
   });
   
@@ -47,67 +77,6 @@ const extractVehicleKeywords = (message) => {
   }
   
   return keywords;
-};
-
-// Add this function to generate responses based on rules
-// In server/routes/chat.js, update the generateResponse function
-const generateResponse = (message, vehicles, isCompare) => {
-  const lowerMessage = message.toLowerCase();
-  
-  // Handle comparison requests
-  if (isCompare && vehicles.length >= 2) {
-    return generateComparison(vehicles);
-  }
-  
-  // Handle specific attribute questions
-  if (lowerMessage.includes("mileage") || lowerMessage.includes("fuel efficiency") || 
-      lowerMessage.includes("mpg") || lowerMessage.includes("gas mileage")) {
-    return generateMileageResponse(vehicles);
-  }
-  
-  if (lowerMessage.includes("price") || lowerMessage.includes("cost") || 
-      lowerMessage.includes("afford") || lowerMessage.includes("budget")) {
-    return generatePriceResponse(vehicles);
-  }
-  
-  if (lowerMessage.includes("maintenance") || lowerMessage.includes("service") || 
-      lowerMessage.includes("repair")) {
-    return generateMaintenanceResponse(vehicles);
-  }
-  
-  if (lowerMessage.includes("engine") || lowerMessage.includes("performance") || 
-      lowerMessage.includes("power") || lowerMessage.includes("acceleration")) {
-    return generateEngineResponse(vehicles);
-  }
-  
-  // Handle recommendations
-  if (lowerMessage.includes("recommend") || lowerMessage.includes("suggest") || 
-      lowerMessage.includes("what should") || lowerMessage.includes("which is better")) {
-    if (vehicles.length > 0) {
-      const v = vehicles[0];
-      return `Based on your query, I'd recommend considering the ${v.name}. It's a ${v.type} by ${v.brand} with ${v.engine}, mileage of ${v.mileage}, and price around ${v.price}. Maintenance: ${v.maintenance}\n\nFor a more specific recommendation, let me know your budget, preferred vehicle type, or what features matter most to you.`;
-    } else {
-      return "To give you a good recommendation, I need to know more about your preferences. Could you tell me about your budget, preferred vehicle type, or what features are important to you?";
-    }
-  }
-  
-  // Default response with available vehicles
-  if (vehicles.length > 0) {
-    const v = vehicles[0];
-    return `Based on the database, ${v.name} is a ${v.type} by ${v.brand} with ${v.engine}, mileage of ${v.mileage}, and price around ${v.price}. Maintenance: ${v.maintenance}\n\nIs there something specific you'd like to know about this vehicle?`;
-  }
-  
-  // If no vehicles found, provide a list of available vehicles
-  return `I couldn't find specific information about that vehicle. Here are some vehicles I can help you with:\n\n` +
-    `1. Toyota Corolla\n` +
-    `2. Honda Civic\n` +
-    `3. Tesla Model 3\n` +
-    `4. Ford F-150\n` +
-    `5. BMW 3 Series\n` +
-    `6. Honda CR-V\n` +
-    `7. Toyota Prius\n` +
-    `8. Harley-Davidson Iron 883\n\n` +
-    `You can ask me about any of these vehicles by name, or ask about specific types like "SUVs", "electric vehicles", or "trucks".`;
 };
 
 // Helper functions for specific response types
@@ -211,8 +180,222 @@ const generateEngineResponse = (vehicles) => {
   return response;
 };
 
+// New helper functions for specific response types
+const generateFamilyResponse = (vehicles) => {
+  const familyVehicles = vehicles.filter(v => 
+    v.tags.includes("family") || v.tags.includes("spacious") || 
+    v.tags.includes("minivan") || v.tags.includes("three-rows")
+  );
+  
+  if (familyVehicles.length === 0) {
+    return "For families, I typically recommend minivans, SUVs with three rows, or spacious sedans. These vehicles offer ample cargo space, comfortable seating for multiple passengers, and family-friendly features. Would you like specific recommendations in any of these categories?";
+  }
+  
+  let response = `Here are some great family vehicles:\n`;
+  familyVehicles.forEach(v => {
+    response += `${v.name}: ${v.type} with ${v.mileage}, priced at ${v.price}\n`;
+  });
+  
+  response += `\nFor families with multiple children, minivans like the Honda Odyssey or three-row SUVs like the Ford Explorer offer the most space and flexibility.`;
+  
+  return response;
+};
+
+const generateOffroadResponse = (vehicles) => {
+  const offroadVehicles = vehicles.filter(v => 
+    v.tags.includes("off-road") || v.tags.includes("4wd") || 
+    v.tags.includes("awd") || v.name.includes("Jeep")
+  );
+  
+  if (offroadVehicles.length === 0) {
+    return "For off-road capability, I recommend looking at vehicles with 4WD systems, higher ground clearance, and rugged construction. Jeep models, certain trucks, and specialized SUVs are typically best suited for off-road adventures. Would you like specific recommendations?";
+  }
+  
+  let response = `Here are some vehicles with good off-road capabilities:\n`;
+  offroadVehicles.forEach(v => {
+    response += `${v.name}: ${v.type} with ${v.engine}, priced at ${v.price}\n`;
+  });
+  
+  response += `\nThe Jeep Grand Cherokee is particularly known for its off-road prowess, while trucks like the Toyota Tacoma offer excellent trail capability.`;
+  
+  return response;
+};
+
+const generateLuxuryResponse = (vehicles) => {
+  const luxuryVehicles = vehicles.filter(v => 
+    v.tags.includes("luxury") || v.tags.includes("premium") || 
+    ["BMW", "Mercedes", "Mercedes-Benz", "Audi", "Lexus", "Porsche"].includes(v.brand)
+  );
+  
+  if (luxuryVehicles.length === 0) {
+    return "For a luxury experience, consider brands like BMW, Mercedes-Benz, Audi, Lexus, or Porsche. These vehicles offer premium materials, advanced technology, superior comfort, and enhanced performance. Would you like recommendations in a specific category?";
+  }
+  
+  let response = `Here are some luxury vehicle options:\n`;
+  luxuryVehicles.forEach(v => {
+    response += `${v.name}: ${v.type} with ${v.engine}, priced at ${v.price}\n`;
+  });
+  
+  response += `\nKeep in mind that luxury vehicles typically have higher maintenance costs, but offer superior comfort, technology, and driving experience.`;
+  
+  return response;
+};
+
+const generateBudgetResponse = (vehicles) => {
+  const budgetVehicles = vehicles.filter(v => {
+    const price = parseFloat(v.price.replace(/[^0-9.-]+/g, ""));
+    return price < 30000 || v.tags.includes("budget-friendly") || v.tags.includes("affordable");
+  });
+  
+  if (budgetVehicles.length === 0) {
+    return "For budget-friendly options, consider compact cars like the Toyota Corolla or Honda Civic, which offer excellent value, reliability, and fuel efficiency. Would you like specific recommendations under a certain price point?";
+  }
+  
+  let response = `Here are some budget-friendly vehicles:\n`;
+  budgetVehicles.forEach(v => {
+    response += `${v.name}: ${v.type} with ${v.mileage}, priced at ${v.price}\n`;
+  });
+  
+  response += `\nThe Toyota Corolla and Honda Civic are particularly known for offering excellent value with low maintenance costs and good fuel economy.`;
+  
+  return response;
+};
+
+const generateEcoResponse = (vehicles) => {
+  const ecoVehicles = vehicles.filter(v => 
+    v.type === "EV" || v.type === "Hybrid" || v.tags.includes("eco-friendly")
+  );
+  
+  if (ecoVehicles.length === 0) {
+    return "For eco-friendly options, consider electric vehicles (EVs) or hybrids. EVs produce zero emissions while hybrids offer excellent fuel efficiency. Would you like specific recommendations in either category?";
+  }
+  
+  let response = `Here are some eco-friendly vehicles:\n`;
+  ecoVehicles.forEach(v => {
+    response += `${v.name}: ${v.type} with ${v.mileage}, priced at ${v.price}\n`;
+  });
+  
+  response += `\nThe Toyota Prius offers exceptional fuel efficiency as a hybrid, while the Tesla Model 3 provides a premium electric experience with zero emissions.`;
+  
+  return response;
+};
+
+// New helper function for motorcycle-specific responses
+const generateMotorcycleResponse = (vehicles) => {
+  const motorcycles = vehicles.filter(v => v.type === "Bike" || v.tags.includes("motorcycle"));
+  
+  if (motorcycles.length === 0) {
+    return "I don't have specific information about motorcycles in my database. Motorcycles offer excellent fuel efficiency and a unique riding experience. They come in various styles including cruisers, sport bikes, and touring bikes. Would you like information about a specific motorcycle brand or type?";
+  }
+  
+  let response = `Here are the motorcycles in my database:\n`;
+  motorcycles.forEach(v => {
+    response += `${v.name}: ${v.type} with ${v.engine}, mileage of ${v.mileage}, priced at ${v.price}\n`;
+    response += `   Maintenance: ${v.maintenance}\n`;
+  });
+  
+  response += `\nMotorcycles require different riding skills and safety considerations compared to cars. Always wear proper safety gear and consider taking a motorcycle safety course.`;
+  
+  return response;
+};
+
+// Main response generation function
+const generateResponse = (message, vehicles, isCompare) => {
+  const lowerMessage = message.toLowerCase();
+  
+  // Handle comparison requests
+  if (isCompare && vehicles.length >= 2) {
+    return generateComparison(vehicles);
+  }
+  
+  // Handle motorcycle-specific queries
+  if (lowerMessage.includes("motorcycle") || lowerMessage.includes("motorcycles") || 
+      lowerMessage.includes("bike") || lowerMessage.includes("bikes")) {
+    return generateMotorcycleResponse(vehicles);
+  }
+  
+  // Handle specific attribute questions
+  if (lowerMessage.includes("mileage") || lowerMessage.includes("fuel efficiency") || 
+      lowerMessage.includes("mpg") || lowerMessage.includes("gas mileage")) {
+    return generateMileageResponse(vehicles);
+  }
+  
+  if (lowerMessage.includes("price") || lowerMessage.includes("cost") || 
+      lowerMessage.includes("afford") || lowerMessage.includes("budget")) {
+    return generatePriceResponse(vehicles);
+  }
+  
+  if (lowerMessage.includes("maintenance") || lowerMessage.includes("service") || 
+      lowerMessage.includes("repair")) {
+    return generateMaintenanceResponse(vehicles);
+  }
+  
+  if (lowerMessage.includes("engine") || lowerMessage.includes("performance") || 
+      lowerMessage.includes("power") || lowerMessage.includes("acceleration")) {
+    return generateEngineResponse(vehicles);
+  }
+  
+  // Handle family vehicle requests
+  if (lowerMessage.includes("family") || lowerMessage.includes("kids") || 
+      lowerMessage.includes("spacious") || lowerMessage.includes("room")) {
+    return generateFamilyResponse(vehicles);
+  }
+  
+  // Handle off-road requests
+  if (lowerMessage.includes("off-road") || lowerMessage.includes("offroad") || 
+      lowerMessage.includes("trail") || lowerMessage.includes("rugged")) {
+    return generateOffroadResponse(vehicles);
+  }
+  
+  // Handle luxury/premium requests
+  if (lowerMessage.includes("luxury") || lowerMessage.includes("premium") || 
+      lowerMessage.includes("high-end")) {
+    return generateLuxuryResponse(vehicles);
+  }
+  
+  // Handle budget/affordable requests
+  if (lowerMessage.includes("cheap") || lowerMessage.includes("affordable") || 
+      lowerMessage.includes("budget") || lowerMessage.includes("inexpensive")) {
+    return generateBudgetResponse(vehicles);
+  }
+  
+  // Handle eco-friendly requests
+  if (lowerMessage.includes("eco") || lowerMessage.includes("environment") || 
+      lowerMessage.includes("green")) {
+    return generateEcoResponse(vehicles);
+  }
+  
+  // Handle recommendations
+  if (lowerMessage.includes("recommend") || lowerMessage.includes("suggest") || 
+      lowerMessage.includes("what should") || lowerMessage.includes("which is better")) {
+    if (vehicles.length > 0) {
+      const v = vehicles[0];
+      return `Based on your query, I'd recommend considering the ${v.name}. It's a ${v.type} by ${v.brand} with ${v.engine}, mileage of ${v.mileage}, and price around ${v.price}. Maintenance: ${v.maintenance}\n\nFor a more specific recommendation, let me know your budget, preferred vehicle type, or what features matter most to you.`;
+    } else {
+      return "To give you a good recommendation, I need to know more about your preferences. Could you tell me about your budget, preferred vehicle type, or what features are important to you?";
+    }
+  }
+  
+  // Default response with available vehicles
+  if (vehicles.length > 0) {
+    const v = vehicles[0];
+    return `Based on the database, ${v.name} is a ${v.type} by ${v.brand} with ${v.engine}, mileage of ${v.mileage}, and price around ${v.price}. Maintenance: ${v.maintenance}\n\nIs there something specific you'd like to know about this vehicle?`;
+  }
+  
+  // If no vehicles found, provide a list of available vehicle types
+  return `I couldn't find specific information about that vehicle. Here are some vehicle types I can help you with:\n\n` +
+    `• Cars (sedans, hatchbacks, sports cars)\n` +
+    `• SUVs (compact, mid-size, large)\n` +
+    `• Trucks (full-size, mid-size)\n` +
+    `• Electric Vehicles (EVs)\n` +
+    `• Hybrid Vehicles\n` +
+    `• Minivans\n` +
+    `• Convertibles\n` +
+    `• Motorcycles\n\n` +
+    `You can ask me about specific models, compare vehicles, or get recommendations based on your needs (budget, family, performance, etc.).`;
+};
+
 // Main chat route
-// In server/routes/chat.js, update the main route
 router.post("/", async (req, res) => {
   try {
     const { message, sessionId: clientSessionId } = req.body;
@@ -258,6 +441,15 @@ router.post("/", async (req, res) => {
       })
         .limit(5)
         .lean();
+        
+      // If we're looking for a specific type (like SUVs, motorcycles, etc.) and got no results,
+      // try a more direct type match
+      if (vehicles.length === 0 && keywords.some(k => ["suv", "bike", "car", "truck", "ev", "hybrid"].includes(k))) {
+        const typeKeyword = keywords.find(k => ["suv", "bike", "car", "truck", "ev", "hybrid"].includes(k));
+        vehicles = await Vehicle.find({ type: { $regex: typeKeyword, $options: "i" } })
+          .limit(5)
+          .lean();
+      }
     }
 
     // Check if this is a comparison request
