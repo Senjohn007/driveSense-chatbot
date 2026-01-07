@@ -1,21 +1,90 @@
+import { useState } from "react";
 import "./index.css";
+import { sendMessage } from "./api";
 
 function App() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [sessionId, setSessionId] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMsg = { role: "user", content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const { data } = await sendMessage(input, sessionId);
+      if (!sessionId && data.sessionId) setSessionId(data.sessionId);
+
+      const botMsg = { role: "assistant", content: data.reply };
+      setMessages(prev => [...prev, botMsg]);
+    } catch (e) {
+      const msg =
+        e.response?.data?.error || "Error contacting server.";
+      setMessages(prev => [
+        ...prev,
+        { role: "assistant", content: msg },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
-      <div className="max-w-xl w-full px-6 py-8 rounded-2xl bg-slate-800 shadow-lg">
-        <h1 className="text-3xl font-bold text-emerald-400 mb-4 text-center">
-          DriveSense Chatbot
+    <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+      <div className="w-full max-w-2xl bg-slate-800 rounded-lg p-4 flex flex-col h-[80vh]">
+        <h1 className="text-xl font-semibold mb-2">
+          Automobile AI Chatbot
         </h1>
-        <p className="text-sm text-slate-300 mb-6 text-center">
-          Frontend is ready with React + Tailwind. Next step is to build the chat UI and connect to your Node/Express backend.
-        </p>
-        <div className="flex flex-col gap-3">
-          <button className="w-full py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 font-medium">
-            New chat
-          </button>
-          <button className="w-full py-2 rounded-lg border border-slate-600 hover:bg-slate-700">
-            Load previous conversations
+
+        <div className="flex-1 overflow-y-auto space-y-2 mb-2">
+          {messages.map((m, idx) => (
+            <div
+              key={idx}
+              className={
+                m.role === "user"
+                  ? "text-right"
+                  : "text-left text-emerald-300"
+              }
+            >
+              <span className="inline-block px-3 py-2 rounded bg-slate-700">
+                {m.content}
+              </span>
+            </div>
+          ))}
+          {loading && (
+            <div className="text-left text-gray-400 text-sm">
+              Typing...
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <textarea
+            className="flex-1 bg-slate-700 rounded p-2 text-sm resize-none"
+            rows={2}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about mileage, maintenance, comparisons..."
+          />
+          <button
+            onClick={handleSend}
+            className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
+            disabled={loading}
+          >
+            Send
           </button>
         </div>
       </div>
