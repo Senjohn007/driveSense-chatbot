@@ -7,17 +7,30 @@ function App() {
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const [suggestions, setSuggestions] = useState([
+    "Tell me about fuel-efficient cars",
+    "Compare Toyota Corolla vs Honda Civic",
+    "What's the maintenance cost for trucks?",
+    "Which EV has the best mileage?"
+  ]);
+
+  // Function to handle suggestion clicks
+  const handleSuggestionClick = (suggestion) => {
+    setInput(suggestion);
+  };
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
     const userMsg = { role: "user", content: input };
     setMessages(prev => [...prev, userMsg]);
+    const currentInput = input; // Store the input before clearing it
     setInput("");
     setLoading(true);
 
     try {
-      const { data } = await sendMessage(input, sessionId);
+      const { data } = await sendMessage(currentInput, sessionId);
       if (!sessionId && data.sessionId) setSessionId(data.sessionId);
 
       const botMsg = { role: "assistant", content: data.reply };
@@ -70,6 +83,25 @@ function App() {
           )}
         </div>
 
+        {/* Show suggestions when there are no messages or after a few messages */}
+        {(messages.length === 0 || messages.length % 5 === 0) && (
+          <div className="mb-4">
+            <p className="text-gray-400 text-sm mb-2">Try asking:</p>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full text-xs text-gray-300"
+                  disabled={loading}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-2">
           <textarea
             className="flex-1 bg-slate-700 rounded p-2 text-sm resize-none"
@@ -78,13 +110,14 @@ function App() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask about mileage, maintenance, comparisons..."
+            disabled={loading}
           />
           <button
             onClick={handleSend}
-            className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
-            disabled={loading}
+            className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm disabled:bg-emerald-800 disabled:opacity-50"
+            disabled={loading || !input.trim()}
           >
-            Send
+            {loading ? "Sending..." : "Send"}
           </button>
         </div>
       </div>

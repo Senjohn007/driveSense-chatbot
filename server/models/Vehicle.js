@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 const vehicleSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, index: true },
-    type: { type: String, enum: ["Car", "Bike", "Truck", "EV"], required: true },
+    type: { 
+      type: String, 
+      enum: ["Car", "Bike", "Truck", "EV", "SUV", "Hybrid"], 
+      required: true 
+    },
     brand: String,
     engine: String,
     mileage: String,
@@ -13,6 +17,5 @@ const vehicleSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 
 export default mongoose.model("Vehicle", vehicleSchema);
