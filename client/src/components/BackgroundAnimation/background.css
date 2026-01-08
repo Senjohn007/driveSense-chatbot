@@ -1,3 +1,4 @@
+/* client/src/components/BackgroundAnimation/background.css */
 .animated-background {
   position: fixed;
   width: 100%;
@@ -9,63 +10,238 @@
   background: linear-gradient(to bottom right, var(--bg-primary), var(--bg-secondary));
 }
 
-.shape {
+/* Road lines for motion effect */
+.road-lines {
   position: absolute;
-  opacity: 0.1;
-  animation: float 20s infinite ease-in-out;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.shape-1 {
-  width: 80px;
+.road-line {
+  position: absolute;
+  width: 10px;
   height: 80px;
   background: var(--accent-primary);
-  border-radius: 50%;
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
+  opacity: 0.2;
+  border-radius: 5px;
 }
 
-.shape-2 {
+.line-1 {
+  left: 20%;
+  animation: drive 8s linear infinite;
+}
+
+.line-2 {
+  left: 50%;
+  animation: drive 10s linear infinite;
+  animation-delay: 2s;
+}
+
+.line-3 {
+  left: 80%;
+  animation: drive 12s linear infinite;
+  animation-delay: 4s;
+}
+
+/* Car silhouettes */
+.car-silhouette {
+  position: absolute;
+  opacity: 0.1;
+  animation: drive 15s linear infinite;
+}
+
+.car-1 {
   width: 120px;
-  height: 120px;
+  height: 40px;
   background: var(--accent-secondary);
-  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-  top: 60%;
-  right: 10%;
-  animation-delay: 3s;
-  animation-duration: 25s;
+  border-radius: 10px 30px 5px 5px;
+  top: 15%;
+  left: -120px;
+  animation-duration: 20s;
 }
 
-.shape-3 {
+.car-1::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 25px;
+  background: var(--accent-secondary);
+  top: -20px;
+  left: 20px;
+  border-radius: 10px 10px 0 0;
+}
+
+.car-2 {
   width: 100px;
-  height: 100px;
+  height: 35px;
   background: var(--accent-primary);
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  bottom: 10%;
-  left: 30%;
+  border-radius: 10px 25px 5px 5px;
+  top: 70%;
+  left: -100px;
+  animation-duration: 25s;
   animation-delay: 5s;
 }
 
-.shape-4 {
-    width: 150px;
-    height: 150px;
-    background: var(--accent-secondary);
-    border-radius: 50%;
-    top: 10%;
-    right: 30%;
-    animation-delay: 7s;
-    animation-duration: 30s;
+.car-2::before {
+  content: '';
+  position: absolute;
+  width: 35px;
+  height: 20px;
+  background: var(--accent-primary);
+  top: -18px;
+  left: 15px;
+  border-radius: 10px 10px 0 0;
 }
 
+/* Wheels */
+.wheel {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.1;
+  border: 3px solid var(--accent-secondary);
+  animation: rotate 5s linear infinite;
+}
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
+.wheel-1 {
+  top: 40%;
+  left: 10%;
+  animation-duration: 8s;
+}
+
+.wheel-2 {
+  top: 60%;
+  right: 15%;
+  animation-duration: 10s;
+  animation-direction: reverse;
+}
+
+/* Gears */
+.gear {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  opacity: 0.1;
+  animation: rotate 20s linear infinite;
+}
+
+.gear-1 {
+  top: 20%;
+  right: 20%;
+  animation-duration: 25s;
+}
+
+.gear-2 {
+  bottom: 20%;
+  left: 20%;
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+
+.gear::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--accent-primary);
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 
+    21% 91%, 32% 57%, 2% 35%, 39% 35%
+  );
+}
+
+/* Speedometer */
+.speedometer {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  opacity: 0.1;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+
+.speedometer::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  clip-path: polygon(50% 50%, 100% 50%, 100% 15%, 85% 0%, 50% 0%);
+  transform-origin: center;
+  animation: speedUp 8s ease-in-out infinite alternate;
+}
+
+/* Animations */
+@keyframes drive {
+  0% {
+    transform: translateX(-100px);
   }
-  33% {
-    transform: translateY(-30px) rotate(120deg);
+  100% {
+    transform: translateX(calc(100vw + 100px));
   }
-  66% {
-    transform: translateY(30px) rotate(240deg);
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes speedUp {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+/* Theme-specific adjustments */
+[data-theme="light"] .road-line,
+[data-theme="light"] .car-silhouette,
+[data-theme="light"] .wheel,
+[data-theme="light"] .gear,
+[data-theme="light"] .speedometer {
+  opacity: 0.05;
+}
+
+[data-theme="dark"] .road-line,
+[data-theme="dark"] .car-silhouette,
+[data-theme="dark"] .wheel,
+[data-theme="dark"] .gear,
+[data-theme="dark"] .speedometer {
+  opacity: 0.1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .car-1, .car-2 {
+    width: 80px;
+    height: 30px;
+  }
+  
+  .wheel {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .gear {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .speedometer {
+    width: 70px;
+    height: 70px;
   }
 }
