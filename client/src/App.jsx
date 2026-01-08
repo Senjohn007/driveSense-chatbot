@@ -1,8 +1,10 @@
+// client/src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from './context/ThemeContext';
+import { AnimationProvider } from './context/AnimationContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import AnimatedBackground from './components/BackgroundAnimation/AnimatedBackground';
+import AnimationSelector from './components/BackgroundAnimation/AnimationSelector';
 import ChatHome from './pages/ChatHome';
 import './index.css'; // Contains Tailwind and CSS variables
 
@@ -15,19 +17,21 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Router>
-        <div className="app-layout">
-          <AnimatedBackground />
-          <Navbar onClearChat={handleClearChat} />
-          <main className="main-content">
-            <Routes>
-              {/* Using a key allows remounting the component, clearing its state */}
-              <Route path="/" element={<ChatHome key={Date.now()} />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
+      <AnimationProvider>
+        <Router>
+          <div className="app-layout">
+            <AnimationSelector />
+            <Navbar onClearChat={handleClearChat} />
+            <main className="main-content">
+              <Routes>
+                {/* Using a key allows remounting the component, clearing its state */}
+                <Route path="/" element={<ChatHome key={Date.now()} />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </AnimationProvider>
     </ThemeProvider>
   );
 }
