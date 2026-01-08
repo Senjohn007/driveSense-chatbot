@@ -1,15 +1,16 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import ScrollToTop from "../components/ScrollToTop";
 import { sendMessage } from "../api";
 import "../styles/chatHome.css";
 
 function ChatHome() {
-  const { theme } = useContext(ThemeContext); // Get theme for dynamic styling if needed
+  const { theme } = useContext(ThemeContext);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null); // Ref for scrolling to bottom
   
   const [suggestions, setSuggestions] = useState([
     "Tell me about fuel-efficient cars",
@@ -21,6 +22,15 @@ function ChatHome() {
     "Compare luxury sedans",
     "Tell me about hybrid vehicles"
   ]);
+
+  // Auto-scroll to bottom when messages change
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSuggestionClick = (suggestion) => {
     setInput(suggestion);
@@ -60,8 +70,6 @@ function ChatHome() {
     }
   };
 
-  // The clearConversation function is now handled by re-rendering the component from App.jsx
-  // but you can keep it if you want to clear messages without a full page reload.
   const clearConversation = () => {
     setMessages([]);
     setSessionId(null);
@@ -98,6 +106,8 @@ function ChatHome() {
               </div>
             </div>
           )}
+          {/* This invisible element will be scrolled into view */}
+          <div ref={messagesEndRef} />
         </div>
 
         {(messages.length === 0 || messages.length % 5 === 0) && (

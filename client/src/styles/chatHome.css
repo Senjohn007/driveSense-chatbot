@@ -12,16 +12,30 @@
   transition: background-color 0.3s ease;
 }
 
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* Prevents the chat window from growing beyond its container */
+}
+
 .messages-container {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 1rem;
   padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for Firefox to allow flex item to shrink */
 }
 
 .welcome-message {
   text-align: center;
   padding: 2rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .welcome-message h2 {
@@ -97,6 +111,7 @@
 
 .suggestions-container {
   margin-bottom: 1rem;
+  flex-shrink: 0; /* Prevents this section from shrinking */
 }
 
 .suggestions-container p {
@@ -135,6 +150,7 @@
 .input-container {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0; /* Prevents this section from shrinking */
 }
 
 .message-input {
@@ -147,6 +163,7 @@
   resize: none;
   font-size: 0.875rem;
   transition: border-color 0.2s, box-shadow 0.2s;
+  max-height: 120px; /* Limit the maximum height of the textarea */
 }
 
 .message-input:focus {
@@ -164,6 +181,7 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: background-color 0.2s;
+  flex-shrink: 0; /* Prevents this button from shrinking */
 }
 
 .send-btn:hover:not(:disabled) {
@@ -177,15 +195,20 @@
 }
 
 /* Scrollbar styling */
-.messages-container::-webkit-scrollbar { width: 6px; }
-.messages-container::-webkit-scrollbar-track { background: var(--bg-secondary); }
+.messages-container::-webkit-scrollbar { 
+  width: 6px; 
+}
+.messages-container::-webkit-scrollbar-track { 
+  background: var(--bg-secondary); 
+  border-radius: 3px;
+}
 .messages-container::-webkit-scrollbar-thumb { 
   background: var(--border-color); 
   border-radius: 3px; 
 }
-.messages-container::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-/* Add these styles to your chatHome.css file */
+.messages-container::-webkit-scrollbar-thumb:hover { 
+  background: var(--text-muted); 
+}
 
 /* Vehicle Info Card Styles */
 .vehicle-info-card {
