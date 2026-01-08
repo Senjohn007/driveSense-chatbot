@@ -1,53 +1,15 @@
 .chat-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #1e293b;
-  color: #f1f5f9;
-  padding: 1rem;
-}
-
-.chat-window {
   width: 100%;
-  max-width: 800px;
-  background-color: #334155;
+  max-width: 900px;
+  background-color: var(--bg-secondary);
   border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  height: 90vh;
+  height: 85vh;
   max-height: 800px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #475569;
-}
-
-.chat-header h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.clear-btn {
-  background-color: #ef4444;
-  color: white;
-  border: none;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.clear-btn:hover {
-  background-color: #dc2626;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 .messages-container {
@@ -65,11 +27,11 @@
 .welcome-message h2 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-  color: #10b981;
+  color: var(--accent-primary);
 }
 
 .welcome-message p {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .message {
@@ -94,14 +56,14 @@
 }
 
 .user-message .message-content {
-  background-color: #3b82f6;
+  background-color: var(--accent-secondary);
   color: white;
   border-bottom-right-radius: 0;
 }
 
 .bot-message .message-content {
-  background-color: #475569;
-  color: #10b981;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
   border-bottom-left-radius: 0;
 }
 
@@ -109,7 +71,7 @@
   display: flex;
   align-items: center;
   padding: 0.75rem;
-  background-color: #475569;
+  background-color: var(--bg-tertiary);
   border-radius: 0.5rem;
   border-bottom-left-radius: 0;
   width: 60px;
@@ -118,30 +80,19 @@
 .typing-indicator span {
   height: 8px;
   width: 8px;
-  background-color: #10b981;
+  background-color: var(--accent-primary);
   border-radius: 50%;
   display: inline-block;
   margin: 0 2px;
   animation: typing 1.4s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(1) {
-  animation-delay: -0.32s;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: -0.16s;
-}
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
 
 @keyframes typing {
-  0%, 80%, 100% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
 .suggestions-container {
@@ -149,7 +100,7 @@
 }
 
 .suggestions-container p {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
@@ -161,18 +112,19 @@
 }
 
 .suggestion-btn {
-  background-color: #475569;
-  color: #cbd5e1;
-  border: none;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   padding: 0.375rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .suggestion-btn:hover {
-  background-color: #64748b;
+  background-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 .suggestion-btn:disabled {
@@ -187,26 +139,24 @@
 
 .message-input {
   flex: 1;
-  background-color: #475569;
-  border: none;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   padding: 0.75rem;
-  color: #f1f5f9;
+  color: var(--text-primary);
   resize: none;
   font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .message-input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #3b82f6;
-}
-
-.message-input:disabled {
-  opacity: 0.5;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
 .send-btn {
-  background-color: #10b981;
+  background-color: var(--accent-primary);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -227,30 +177,24 @@
 }
 
 /* Scrollbar styling */
-.messages-container::-webkit-scrollbar {
-  width: 6px;
+.messages-container::-webkit-scrollbar { width: 6px; }
+.messages-container::-webkit-scrollbar-track { background: var(--bg-secondary); }
+.messages-container::-webkit-scrollbar-thumb { 
+  background: var(--border-color); 
+  border-radius: 3px; 
 }
+.messages-container::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-.messages-container::-webkit-scrollbar-track {
-  background: #334155;
-}
-
-.messages-container::-webkit-scrollbar-thumb {
-  background: #64748b;
-  border-radius: 3px;
-}
-
-.messages-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
+/* Add these styles to your chatHome.css file */
 
 /* Vehicle Info Card Styles */
 .vehicle-info-card {
-  background-color: #475569;
+  background-color: var(--bg-tertiary);
   border-radius: 0.5rem;
   padding: 1rem;
   margin: 0.5rem 0;
-  border-left: 4px solid #10b981;
+  border-left: 4px solid var(--accent-primary);
+  transition: background-color 0.3s ease;
 }
 
 .vehicle-header {
@@ -263,11 +207,11 @@
 .vehicle-name {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .vehicle-type {
-  background-color: #10b981;
+  background-color: var(--accent-primary);
   color: white;
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
@@ -286,13 +230,13 @@
 
 .detail-label {
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-muted);
   width: 100px;
   flex-shrink: 0;
 }
 
 .detail-value {
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .vehicle-tags {
@@ -302,8 +246,8 @@
 }
 
 .vehicle-tag {
-  background-color: #334155;
-  color: #cbd5e1;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
   font-size: 0.625rem;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;

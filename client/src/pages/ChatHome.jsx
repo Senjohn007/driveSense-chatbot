@@ -1,8 +1,11 @@
-import { useState } from "react";
-import "../styles/chatHome.css";
+import { useState, useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
+import ScrollToTop from "../components/ScrollToTop";
 import { sendMessage } from "../api";
+import "../styles/chatHome.css";
 
 function ChatHome() {
+  const { theme } = useContext(ThemeContext); // Get theme for dynamic styling if needed
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState(null);
@@ -19,7 +22,6 @@ function ChatHome() {
     "Tell me about hybrid vehicles"
   ]);
 
-  // Function to handle suggestion clicks
   const handleSuggestionClick = (suggestion) => {
     setInput(suggestion);
   };
@@ -58,6 +60,8 @@ function ChatHome() {
     }
   };
 
+  // The clearConversation function is now handled by re-rendering the component from App.jsx
+  // but you can keep it if you want to clear messages without a full page reload.
   const clearConversation = () => {
     setMessages([]);
     setSessionId(null);
@@ -66,21 +70,10 @@ function ChatHome() {
   return (
     <div className="chat-container">
       <div className="chat-window">
-        <div className="chat-header">
-          <h1>Automobile AI Chatbot</h1>
-          <button 
-            className="clear-btn" 
-            onClick={clearConversation}
-            title="Clear conversation"
-          >
-            Clear
-          </button>
-        </div>
-
         <div className="messages-container">
           {messages.length === 0 && (
             <div className="welcome-message">
-              <h2>Welcome to DriveSense Chatbot</h2>
+              <h2>Welcome to DriveSense</h2>
               <p>Ask me anything about vehicles - from fuel efficiency to maintenance costs, comparisons, and more!</p>
             </div>
           )}
@@ -107,7 +100,6 @@ function ChatHome() {
           )}
         </div>
 
-        {/* Show suggestions when there are no messages or after a few messages */}
         {(messages.length === 0 || messages.length % 5 === 0) && (
           <div className="suggestions-container">
             <p>Try asking:</p>
@@ -145,6 +137,7 @@ function ChatHome() {
           </button>
         </div>
       </div>
+      <ScrollToTop />
     </div>
   );
 }

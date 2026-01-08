@@ -79,6 +79,23 @@ const extractVehicleKeywords = (message) => {
   return keywords;
 };
 
+// NEW: Helper function to generate a vehicle card response
+const generateVehicleCard = (vehicle) => {
+  return {
+    type: "vehicle_card",
+    data: {
+      name: vehicle.name,
+      brand: vehicle.brand,
+      engine: vehicle.engine,
+      mileage: vehicle.mileage,
+      price: vehicle.price,
+      maintenance: vehicle.maintenance,
+      type: vehicle.type,
+      tags: vehicle.tags
+    }
+  };
+};
+
 // Helper functions for specific response types
 const generateComparison = (vehicles) => {
   let comparison = "Here's a comparison based on the database data:\n\n";
@@ -373,6 +390,23 @@ const generateResponse = (message, vehicles, isCompare) => {
       return `Based on your query, I'd recommend considering the ${v.name}. It's a ${v.type} by ${v.brand} with ${v.engine}, mileage of ${v.mileage}, and price around ${v.price}. Maintenance: ${v.maintenance}\n\nFor a more specific recommendation, let me know your budget, preferred vehicle type, or what features matter most to you.`;
     } else {
       return "To give you a good recommendation, I need to know more about your preferences. Could you tell me about your budget, preferred vehicle type, or what features are important to you?";
+    }
+  }
+  
+  // NEW: Handle detailed vehicle information requests
+  if (lowerMessage.includes("tell me about") || lowerMessage.includes("show me") || 
+      lowerMessage.includes("details") || lowerMessage.includes("information") ||
+      (lowerMessage.includes("what is") && vehicles.length === 1)) {
+    if (vehicles.length === 1) {
+      // Return a vehicle card for a single vehicle match
+      return generateVehicleCard(vehicles[0]);
+    } else if (vehicles.length > 1) {
+      // If multiple vehicles match, return a text response with options
+      let response = `I found multiple vehicles matching your query. Which one would you like detailed information about?\n\n`;
+      vehicles.forEach((v, i) => {
+        response += `${i+1}. ${v.name} (${v.type}) by ${v.brand}\n`;
+      });
+      return response;
     }
   }
   
