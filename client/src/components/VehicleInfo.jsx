@@ -1,3 +1,4 @@
+// client/src/components/VehicleInfo.jsx
 import React from 'react';
 
 const VehicleInfo = ({ vehicle }) => {
