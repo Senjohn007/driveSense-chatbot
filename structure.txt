@@ -16,7 +16,7 @@ driveSense-chatbot/
 │  │  └─ Message.js             # Chat history schema
 │  │
 │  ├─ routes/
-│  │  ├─ chat.js                # Chat route with rule-based response system (Updated to send vehicle cards)
+│  │  ├─ chat.js                # Chat route with rule-based response system
 │  │  ├─ vehicleRoutes.js       # Vehicle routes (GET, POST /seed, GET /debug, GET /search)
 │  │  └─ history.js             # Chat history routes
 │  │
@@ -31,29 +31,36 @@ driveSense-chatbot/
    │
    └─ src/
       ├─ main.jsx               # React app entry point
-      ├─ App.jsx                # Main app layout with Router, ThemeProvider, Navbar, Footer
+      ├─ App.jsx                # Main app layout with Router, ThemeProvider, AnimationProvider
       ├─ api.js                 # Axios instance for API calls
       ├─ index.css              # Global styles, Tailwind imports, CSS variables, base styles
       │
       ├─ components/            # Reusable UI components
-      │  ├─ Navbar.jsx          # Top navigation bar with theme toggle and clear chat button
+      │  ├─ Navbar.jsx          # Top navigation with animation dropdown (Updated)
       │  ├─ Footer.jsx          # Simple footer component
       │  ├─ ScrollToTop.jsx     # Button to scroll to the top of the page
       │  ├─ VehicleInfo.jsx     # Component to display structured vehicle data
       │  │
       │  └─ BackgroundAnimation/
-      │     ├─ AnimatedBackground.jsx # Animated shapes and automotive-themed background
-      │     └─ background.css       # CSS for the animated background
+      │     ├─ AnimationSelector.jsx   # Main selector for animation components (New)
+      │     ├─ AnimatedBackground.jsx # Wrapper component (Updated)
+      │     ├─ HighwayAnimation.jsx    # Highway night scene animation (New)
+      │     ├─ DashboardAnimation.jsx  # Car dashboard animation (New)
+      │     ├─ EngineAnimation.jsx     # Engine parts animation (New)
+      │     ├─ CityscapeAnimation.jsx  # City scene with cars (New)
+      │     ├─ BlueprintAnimation.jsx  # Technical blueprint animation (New)
+      │     └─ background.css          # CSS for legacy animations (Kept for reference)
       │
       ├─ context/               # React Context providers
-      │  └─ ThemeContext.jsx    # Context for managing and toggling dark/light theme
+      │  ├─ ThemeContext.jsx    # Context for managing and toggling dark/light theme
+      │  └─ AnimationContext.jsx # Context for managing selected animation (New)
       │
       ├─ pages/                 # Page-level components
-      │  └─ ChatHome.jsx        # Main chat interface (Updated with auto-scroll)
+      │  └─ ChatHome.jsx        # Main chat interface
       │
       ├─ styles/                # Component-specific CSS
-      │  ├─ chatHome.css        # Styles for the chat interface (Updated for modern look)
-      │  └─ Navbar.css          # Styles for the Navbar component
+      │  ├─ chatHome.css        # Styles for the chat interface
+      │  └─ Navbar.css          # Styles for the Navbar component (Updated)
       │
       └─ assets/                # Default Vite assets
          ├─ react.svg
