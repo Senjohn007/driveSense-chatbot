@@ -1,0 +1,13 @@
+🚗 DriveSense AI – Full-Stack Automobile Chatbot (MERN)
+
+I recently enhanced DriveSense, an AI-powered automobile chatbot designed to provide vehicle comparisons, mileage insights, maintenance information, and structured vehicle data through natural conversation.
+
+The application is built using the MERN stack (React with Vite, Node.js, Express, MongoDB) and integrates the OpenAI API for intelligent, context-aware responses. The backend follows a clean, scalable architecture with dedicated models, RESTful routes, and database seeding for vehicle data, while chat history is persistently stored in MongoDB.
+
+On the frontend, I implemented React Context for global state management and introduced a dynamic, switchable background animation system (Highway, Dashboard, Engine, Cityscape, Blueprint) to enhance the user experience without compromising code maintainability.
+
+This project strengthened my full-stack development skills, AI integration, state management, and UI/UX design practices.
+
+🔗 GitHub / Live Demo: [Add link]
+
+#MERN #React #NodeJS #MongoDB #Express #OpenAI #AIChatbot #FullStackDevelopment #WebDevelopment #JavaScript #UIUX #Vite #TailwindCSS
